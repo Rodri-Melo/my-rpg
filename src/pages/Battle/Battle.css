@@ -1,0 +1,282 @@
+.battle-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.character-list-battle-guardian {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 2px solid white;
+  width: 200px;
+  height: 470px;
+  margin-top: 20px;
+}
+
+.character-list-battle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 2px solid white;
+  width: 200px;
+  height: 470px;
+  margin-top: 20px;
+}
+
+.character-card-battle-guardian {
+  margin: 5px;
+  text-align: center;
+}
+
+.character-image-battle-guardian {
+  width: 75px;
+  height: 75px;
+  margin-right: 10px;
+  margin-left: 19px;
+  border: 3px solid white;
+}
+
+.character-name-battle-guardian {
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+  margin-bottom: 0px;
+  color: white;
+}
+
+.character-life-battle-guardian {
+  font-size: 14px;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.character-card-battle {
+  margin: 0px;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+
+}
+
+.character-image-battle {
+  width: 75px;
+  height: 75px;
+  margin-right: 10px;
+  margin-left: 19px;
+  border: 3px solid white;
+}
+
+.character-name-battle {
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+  margin-bottom: 0px;
+  color: white;
+}
+
+.character-life-battle {
+  font-size: 14px;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+
+.enemy-list-battle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 50px;
+  margin-right: 20px;
+}
+
+.enemy-image-battle {
+  height: 300px;
+  width: 300px;
+}
+
+.enemy-name-battle {
+  display: flex;
+  justify-content: center;
+  color: white;
+}
+
+.enemy-life-battle {
+  display: flex;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.attack-order-battle {
+  display: flex;
+  justify-content: center;
+  border: 1px solid white;
+  margin-left: -300px;
+
+}
+
+.order-title {
+  color: white;
+  padding-right: 10px;
+}
+
+.order-battle {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding: 10px;
+  margin-right: 10px;
+  color: white;
+  border: 2px solid black;
+
+}
+
+.order li {
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.damager-div {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.back-line {
+  display: flex;
+  justify-items: row;
+  flex-direction: column;
+  height: 493px;
+}
+
+.battle-camp {
+  display: flex;
+  justify-content: space-between;
+}
+
+.active-character-skills {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border: 2px solid white;
+  width: 500px;
+  height: 230px;
+  margin-left: 470px;
+  margin-top: -200px;
+}
+
+.top {
+  height: 100%;
+}
+
+.active-name {
+  color: white;
+  border: 2px solid white;
+  margin-top: -2px;
+}
+
+.active-abilities {
+  color: white;
+  padding: 2px;
+  border: 2px solid white;
+  width: 400px;
+  font-size: 15px;
+}
+
+.attack-btn {
+  display: flex;
+  justify-content: center;
+  margin-left: 700px;
+}
+
+.attack-log {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 470px;
+  margin-bottom: -180px;
+  margin-top: 40px;
+  border: 2px solid white;
+  height: 150px;
+  width: 500px;
+  overflow-y: auto;
+}
+
+.attack-message {
+  color: white;
+  padding: 0px;
+  font-size: 12px;
+}
+
+.victory-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000000;
+  padding: 10px;
+  border: 7px solid #ff0000;
+  color: rgb(255, 0, 0);
+  height: 200px;
+  width: 500px;
+  font-size: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.defeat-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000000;
+  padding: 10px;
+  border: 7px solid #ff0000;
+  color: rgb(255, 0, 0);
+  height: 200px;
+  width: 500px;
+  font-size: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dead-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000000;
+  color: rgb(255, 0, 0);
+  height: 100px;
+  width:400px;
+  font-size: 25px;
+}
+
+.btn-end-battle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 150px;
+  width: 120px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background-color: #ff0000;
+  border: 0;
+  color: #000000;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
+}
+
+
+
