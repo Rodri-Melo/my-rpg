@@ -1,19 +1,20 @@
 const enemies = [
   {
     id: 1,
-    name: 'Dragon',
+    name: 'Troll',
     charClass: 'enemy',
-    image: require('../../images/old/enemies-back3.jpg'),
+    image: require('../../images/new-chars/enemies/enemie1.png'),
     skills: {
-      'Atacar': 'Causa 150 de dano a um alvo',
-      'Baforada': 'Causa 100 de dano a todos os alvos'
+      'Atacar': 'causa ATK + 150 de dano',
+      'Baforada': 'causa ATK + 100 de dano AOE',
+      'Regenerar' : 'Regenera 1500 de vida'
     },
     attributes: {
       life: 5000,
       attack: 300,
-      defense: 90,
+      defense: 120,
       speed: 100,
-    }
+    },
   },
 ];
 

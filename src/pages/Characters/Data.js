@@ -15,7 +15,7 @@ const characters = [
     },
     attributes: {
       life: 1500,
-      attack: 130,
+      attack: 1000,
       defense: 100,
       speed: 85,
     }
@@ -36,7 +36,7 @@ const characters = [
     },
     attributes: {
       life: 2800,
-      attack: 170,
+      attack: 150,
       defense: 150,
       speed: 100,
     }
@@ -58,7 +58,7 @@ const characters = [
     attributes: {
       life: 1400,
       attack: 180,
-      defense: 100,
+      defense: 90,
       speed: 90,
     }
   },
@@ -228,6 +228,27 @@ const characters = [
       attack: 115,
       defense: 80,
       speed: 110,
+    }
+  },
+  {
+    id: 12,
+    name: 'Connor',
+    name2: 'Connor',
+    charClass: 'support',
+    description: 'descriptiondescriptiondescriptiondescriptiondescriptiondescription',
+    image: require('../../images/new-chars/connor/connor4.png'),
+    image2: require('../../images/new-chars/connor/connor1.png'),
+    skills: {
+      'Atacar': 'Causa 90 de dano e aumenta 30% de DEF',
+      'Alma': 'Causa 150 de dano e cria 25% da vida de escudo',
+      'Corte do Dragão': 'Destrói um alvo causando 250 de dano',
+      'Furia': 'Aumenta Ataque e Defesa em 40% por 5 turnos',
+    },
+    attributes: {
+      life: 1500,
+      attack: 100,
+      defense: 100,
+      speed: 85,
     }
   },
 ];

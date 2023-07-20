@@ -51,62 +51,97 @@ const Battle = () => {
 
   const handleCharacterDead = useCallback(() => {
     setShowDeadMessage(true);
-  
+
     setTimeout(() => {
       let updatedOrderList = orderList.slice(1);
-  
+
       if (updatedOrderList.length === 0) {
         updatedOrderList = [...originalOrderList];
       }
-  
+
       setOrderList(updatedOrderList);
       setShowDeadMessage(false);
     }, 2000);
   }, [orderList, originalOrderList]);
-  
 
-  const handleNormalAttack = useCallback((targetCharacter) => {
-    const damage = activeCharacter.attributes.attack - targetCharacter.attributes.defense;
+  const handleEnemyAttack = useCallback((targetCharacter) => {
+    const enemy = activeCharacter
+    const aoeDamage = [...guardians, ...support, ...damager];
+    const randomProbability = Math.random();
 
-    if (damage > 0) {
+    let skillName;
+    let calculatedDamage = 0;
+
+    if (randomProbability < 0.2) {
+      skillName = 'Baforada';
+      calculatedDamage = enemy.attributes.attack + 100;
+
+      aoeDamage.forEach((char) => {
+        let damageToChar = calculatedDamage - char.attributes.defense;
+        if (damageToChar > 0) {
+          if (char.charClass === 'guardian') {
+            const updatedGuardianLives = [...guardianLives];
+            updatedGuardianLives[0] -= damageToChar;
+            setGuardianLives(updatedGuardianLives);
+          }
+          if (char.charClass === 'support') {
+            const updatedSupportLives = [...supportLives];
+            updatedSupportLives[0] -= damageToChar;
+            setSupportLives(updatedSupportLives);
+          }
+          if (char.charClass === 'damager') {
+            const updatedDamagerLives = [...damagerLives];
+            updatedDamagerLives[0] -= damageToChar;
+            setDamagerLives(updatedDamagerLives);
+          }
+          const attackMessage = `${enemy.name} usou ${skillName} em ${char.name} e causou ${damageToChar} de dano.`;
+          setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+        }
+      });
+
+    } else if (randomProbability < 0.6) {
+      skillName = 'Regenerar';
+      const regenerar = enemyLives + 1500;
+
+      setEnemyLives(regenerar);
+
+      const attackMessage = `${enemy.name} usou ${skillName} e se curou em 1500 de vida.`;
+      setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+    } else {
+      skillName = 'Atacar';
+
+      let targetProbability = Math.random();
+      if (targetProbability < 0.6) {
+        targetCharacter = guardians[0];
+      } else if (targetProbability < 0.8) {
+        targetCharacter = support[0];
+      } else {
+        targetCharacter = damager[0];
+      }
+
+      calculatedDamage = enemy.attributes.attack + 150 - targetCharacter.attributes.defense;
+
       if (targetCharacter.charClass === 'guardian') {
         const updatedGuardianLives = [...guardianLives];
-        updatedGuardianLives[0] -= damage;
+        updatedGuardianLives[0] -= calculatedDamage;
         setGuardianLives(updatedGuardianLives);
       }
       if (targetCharacter.charClass === 'support') {
         const updatedSupportLives = [...supportLives];
-        updatedSupportLives[0] -= damage;
+        updatedSupportLives[0] -= calculatedDamage;
         setSupportLives(updatedSupportLives);
       }
       if (targetCharacter.charClass === 'damager') {
         const updatedDamagerLives = [...damagerLives];
-        updatedDamagerLives[0] -= damage;
+        updatedDamagerLives[0] -= calculatedDamage;
         setDamagerLives(updatedDamagerLives);
       }
+      const attackMessage = `${enemy.name} usou ${skillName} em ${targetCharacter.name} e causou ${calculatedDamage} de dano.`;
+      setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
     }
 
-    const attackMessage = `${activeCharacter.name} causou ${damage} de dano a ${targetCharacter.name}`;
-    setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
-  }, [activeCharacter, damagerLives, guardianLives, supportLives]);
+  }, [activeCharacter, damager, damagerLives, guardians, guardianLives, enemyLives, support, supportLives, setGuardianLives, setSupportLives, setDamagerLives]);
 
-  const handleEnemyAttack = useCallback(() => {
-    const randomNumber = Math.random();
-
-    let targetCharacter = null;
-
-    if (randomNumber < 0.6 && guardians.length > 0 && guardianLives[0] > 0) {
-      targetCharacter = guardians[0]; // 60% de chance de atacar o guardian
-    } else if (randomNumber < 0.8 && support.length > 0 && supportLives[0] > 0) {
-      targetCharacter = support[0]; // 20% de chance de atacar o support
-    } else if (damager.length > 0 && damagerLives[0] > 0) {
-      targetCharacter = damager[0]; // 20% de chance de atacar o damager
-    }
-
-    if (targetCharacter) {
-      handleNormalAttack(targetCharacter);
-    }
-  }, [damager, damagerLives, guardians, guardianLives, handleNormalAttack, support, supportLives]);
 
   const handleAttack = useCallback(() => {
     if (showVictoryMessage || showDefeatMessage) {
@@ -313,8 +348,15 @@ const Battle = () => {
               <h2 className="enemy-name-battle">{enemy.name}</h2>
               <img className="enemy-image-battle" src={enemy.image} alt={enemy.name} />
               <div className="enemy-info-battle">
-                <p className="enemy-life-battle"> Vida: {enemyLives}/ {enemy.attributes.life}</p>
+                {enemyLives > enemy.attributes.life ? (
+                  <div className="shielded-enemy">
+                    <p className="enemy-life-battle">Escudo: {enemyLives} / {enemy.attributes.life}</p>
+                  </div>
+                ) : (
+                  <p className="enemy-life-battle">Vida: {enemyLives} / {enemy.attributes.life}</p>
+                )}
               </div>
+
             </div>
           ))}
         </div>

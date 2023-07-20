@@ -107,6 +107,7 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .img-cards {
@@ -145,10 +146,10 @@ body {
 
 .selected-character-info-container {
   border: 2px solid white;
-  width: 600px;
-  height: 290px;
+  width: 650px;
+  height: 288px;
   margin-left: 700px;
-  margin-top: -300px;
+  margin-top: -294px;
 }
 
 .selected-character-details {
@@ -157,7 +158,7 @@ body {
 }
 
 .selected-character-details-image {
-  width: 200px;
+  width: 250px;
   height: 250px;
 }
 
