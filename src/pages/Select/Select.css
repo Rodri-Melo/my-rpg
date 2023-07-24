@@ -75,6 +75,22 @@ body {
   transition: transform 0.3s ease;
 }
 
+.btn-functions-disabled {
+  margin: 40px;
+  width: 120px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background-color: #141414;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
+}
+
 .btn-functions:hover {
   background-color: #970000;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -182,5 +198,6 @@ body {
 
 .abilities-distance {
   padding: 5px;
-  font-size: 18px;
+  font-size: 17px;
+  color: white;
 }

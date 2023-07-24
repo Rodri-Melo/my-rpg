@@ -82,8 +82,8 @@
   color: white;
   display: flex;
   justify-content: center;
+  margin: 2px 2px 2px 2px;
 }
-
 
 .enemy-list-battle {
   display: flex;
@@ -170,7 +170,7 @@
   width: 500px;
   height: 230px;
   margin-left: 470px;
-  margin-top: -200px;
+  margin-top: -240px;
 }
 
 .top {
@@ -289,6 +289,85 @@
   color: white;
   margin-right: 12px;
 }
+
+.skill-option {
+  color: red;
+}
+
+.ally-list {
+  display: flex;
+  border: 2px solid rgb(0, 0, 0);
+  position: absolute;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 150px;
+  color: rgb(4, 141, 22);
+  background-color: rgb(75, 72, 72);
+  font-size: 20px;
+}
+
+.shield-border {
+  border: 3px solid #00FFFF;
+  box-sizing: border-box;
+  margin: 5px 5px 5px 5px;
+}
+
+.dominio {
+  background-color: rgb(0, 0, 0);
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+}
+
+.dominio-def {
+  color: blue;
+  background-color: rgb(0, 4, 255);
+  padding: 5px;
+  border-radius: 5px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+}
+
+.dominio-atq {
+  color: rgb(255, 0, 0);
+  background-color: rgb(255, 0, 0);
+  padding: 5px;
+  border-radius: 5px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+}
+
+.skill {
+  display: flex;
+  align-items: center;
+}
+
+.chaos-mark {
+  background-color: rgb(0, 0, 0);
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+  margin-top: -20px;
+}
+
+.turn-count {
+  color: white;
+  font-size: 25px;
+  display: flex;
+  margin-bottom: 15px;
+}
+
 
 
 

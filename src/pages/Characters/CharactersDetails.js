@@ -8,18 +8,15 @@ const CharacterDetails = () => {
   const { id } = useParams();
   const character = characters.find((character) => character.id === parseInt(id));
 
-  if (!character) {
-    return <div>Personagem não encontrado.</div>;
-  }
-
   return (
     <div className='infos-details'>
       <Header destination="/characters" />
       <h1 className="char-text-details">{character.name2}</h1>
       <h2 className='char-text-details'>{character.charClass}</h2>
-      <img className="character-image-details" src={character.image2} alt={character.name} />
-
-      <p className="char-text-details">{character.description}</p>
+      <div className='img-desc'>
+        <img className="character-image-details" src={character.image2} alt={character.name} />
+        <p className="char-text-description">{character.description}</p>
+      </div>
       <div className='abilities-details'>
         <h3>Habilidades:</h3>
         <ul>

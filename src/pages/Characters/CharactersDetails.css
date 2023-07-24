@@ -28,3 +28,17 @@
 .infos-details {
   margin-top: 150px;
 }
+
+.img-desc {
+  display: flex;
+  padding-left: 40px;
+}
+
+.char-text-description {
+  color: white;
+  border: 2px solid white;
+  margin-left: 200px;
+  margin-right: 200px;
+  display: inline;
+  word-break: break-word;
+}

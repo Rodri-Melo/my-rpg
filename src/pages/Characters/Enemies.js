@@ -5,14 +5,14 @@ const enemies = [
     charClass: 'enemy',
     image: require('../../images/new-chars/enemies/enemie1.png'),
     skills: {
-      'Atacar': 'causa ATK + 150 de dano',
-      'Baforada': 'causa ATK + 100 de dano AOE',
+      'Arranhar': 'causa ATK + 400 de dano',
+      'Baforada': 'causa ATK + 200 de dano AOE',
       'Regenerar' : 'Regenera 1500 de vida'
     },
     attributes: {
-      life: 5000,
-      attack: 300,
-      defense: 120,
+      life: 12000,
+      attack: 500,
+      defense: 150,
       speed: 100,
     },
   },

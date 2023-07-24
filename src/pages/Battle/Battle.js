@@ -15,6 +15,7 @@ const Battle = () => {
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0); // array de selecionados
   const orderedEntities = [...selectedCharacters, ...enemies]; // ordem de ataque
   const characters = selectedCharacters
+  const charsForHeal = selectedCharacters
 
   const originalOrderList = attackOrder(characters, enemies); // ordem original para inicio de turno
   const [orderList, setOrderList] = useState(attackOrder(characters, enemies));
@@ -34,6 +35,20 @@ const Battle = () => {
   const [showDefeatMessage, setShowDefeatMessage] = useState(false);
   const [showDeadMessage, setShowDeadMessage] = useState(false);
 
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedAlly, setSelectedAlly] = useState(null);
+
+  const [distortion, setDistortion] = useState(false);
+  const [chaosMark, setChaosMark] = useState(0);
+  const [whisperMark, setWhisperMark] = useState(false)
+
+  const [dragonScalesBarrier, setDragonScalesBarrier] = useState(false);
+  const [dragonClaws, setDragonClaws] = useState(false);
+
+  const [Lightbringer, setLightbringer] = useState(false)
+
+  const [turnCount, setTurnCount] = useState(1);
+
   const logRef = useRef(null);
   const [enemyTurn, setEnemyTurn] = useState(false);
 
@@ -48,6 +63,11 @@ const Battle = () => {
   const handleDefeat = () => {
     setShowDefeatMessage(true);
   };
+
+  const updateTurnCount = () => {
+    setTurnCount((prevTurnCount) => prevTurnCount + 1);
+  };
+
 
   const handleCharacterDead = useCallback(() => {
     setShowDeadMessage(true);
@@ -65,17 +85,34 @@ const Battle = () => {
   }, [orderList, originalOrderList]);
 
   const handleEnemyAttack = useCallback((targetCharacter) => {
-    const enemy = activeCharacter
-    const aoeDamage = [...guardians, ...support, ...damager];
+    let skillName = '';
     const randomProbability = Math.random();
-
-    let skillName;
-    let calculatedDamage = 0;
 
     if (randomProbability < 0.2) {
       skillName = 'Baforada';
-      calculatedDamage = enemy.attributes.attack + 100;
+    } else if (randomProbability < 0.6) {
+      skillName = 'Regenerar';
+    } else {
+      skillName = 'Arranhar';
+    }
 
+    if (dragonScalesBarrier) {
+      if (skillName === 'Baforada' || skillName === 'Arranhar') {
+        const defenseMessage = `Ares defendeu o time do ataque ${skillName}!`;
+        setAttackLog((prevAttackLog) => [...prevAttackLog, defenseMessage]);
+        setDragonScalesBarrier(false);
+        return;
+      } else if (skillName === 'Regenerar') {
+        skillName = 'Regenerar';
+      }
+    }
+
+    const enemy = activeCharacter;
+    const aoeDamage = [...guardians, ...support, ...damager];
+    let calculatedDamage = 0;
+
+    if (skillName === 'Baforada') {
+      calculatedDamage = enemy.attributes.attack + 200;
       aoeDamage.forEach((char) => {
         let damageToChar = calculatedDamage - char.attributes.defense;
         if (damageToChar > 0) {
@@ -99,16 +136,17 @@ const Battle = () => {
         }
       });
 
-    } else if (randomProbability < 0.6) {
-      skillName = 'Regenerar';
-      const regenerar = enemyLives + 1500;
+    } else if (skillName === 'Regenerar') {
+
+      const maxRegenAmount = 1500;
+      const regenerar = enemyLives[0] + maxRegenAmount;
 
       setEnemyLives(regenerar);
 
       const attackMessage = `${enemy.name} usou ${skillName} e se curou em 1500 de vida.`;
       setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
     } else {
-      skillName = 'Atacar';
+      skillName = 'Arranhar';
 
       let targetProbability = Math.random();
       if (targetProbability < 0.6) {
@@ -119,7 +157,11 @@ const Battle = () => {
         targetCharacter = damager[0];
       }
 
-      calculatedDamage = enemy.attributes.attack + 150 - targetCharacter.attributes.defense;
+      calculatedDamage = enemy.attributes.attack + 400 - targetCharacter.attributes.defense;
+
+      const updateLives = [...enemyLives]
+      updateLives[0] += calculatedDamage;
+      setEnemyLives(updateLives)
 
       if (targetCharacter.charClass === 'guardian') {
         const updatedGuardianLives = [...guardianLives];
@@ -136,12 +178,189 @@ const Battle = () => {
         updatedDamagerLives[0] -= calculatedDamage;
         setDamagerLives(updatedDamagerLives);
       }
-      const attackMessage = `${enemy.name} usou ${skillName} em ${targetCharacter.name} e causou ${calculatedDamage} de dano.`;
+      const attackMessage = `${enemy.name} usou ${skillName} em ${targetCharacter.name} causou ${calculatedDamage} de dano e se curou em ${calculatedDamage}. `;
       setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
     }
+  }, [activeCharacter, damager, damagerLives, guardians, guardianLives, enemyLives, support, supportLives, setGuardianLives, setSupportLives, setDamagerLives, dragonScalesBarrier]);
 
-  }, [activeCharacter, damager, damagerLives, guardians, guardianLives, enemyLives, support, supportLives, setGuardianLives, setSupportLives, setDamagerLives]);
+  const dianaSkills = useCallback((activeCharacter, targetCharacter) => {
+    if (activeCharacter.name === 'Diana') {
+      let skillName;
+      let calculatedDamage = 0;
 
+      if (selectedSkill === 'Luz Mágica') {
+        skillName = 'Luz Mágica';
+        calculatedDamage = activeCharacter.attributes.attack + 300 - targetCharacter.attributes.defense;
+        setLightbringer(true)
+      } else if (selectedSkill === 'Luz Divina') {
+        skillName = 'Luz Divina';
+        calculatedDamage = activeCharacter.attributes.attack + 400 - targetCharacter.attributes.defense;
+      } else if (selectedSkill === 'Chamado Solar') {
+        skillName = 'Chamado Solar'
+        calculatedDamage = activeCharacter.attributes.attack + 200 - targetCharacter.attributes.defense;
+        const calculatedHeal = activeCharacter.attributes.attack + 400
+        const updatedGuardianLives = [...guardianLives];
+        updatedGuardianLives[0] += calculatedHeal;
+        setGuardianLives(updatedGuardianLives);
+
+        const updatedSupportLives = [...supportLives];
+        updatedSupportLives[0] += calculatedHeal;
+        setSupportLives(updatedSupportLives);
+
+        const updatedDamagerLives = [...damagerLives];
+        updatedDamagerLives[0] += calculatedHeal;
+        setDamagerLives(updatedDamagerLives);
+
+        const shieldMessage = `${activeCharacter.name} curou ${calculatedHeal} a todos os aliados`;
+        setAttackLog((prevAttackLog) => [...prevAttackLog, shieldMessage]);
+
+      } else if (selectedSkill === 'Aura Restauradora' && selectedAlly !== null) {
+        const ally = charsForHeal.find((ent) => ent.id === selectedAlly);
+        if (!ally || ally.charClass === 'enemy') {
+          return;
+        }
+
+        skillName = 'Aura Restauradora';
+        const calculatedHealing = activeCharacter.attributes.attack + 350;
+        setLightbringer(true)
+
+        if (ally.charClass === 'guardian') {
+          const updatedGuardianLives = [...guardianLives];
+          updatedGuardianLives[0] += calculatedHealing;
+          updatedGuardianLives[0] = Math.min(updatedGuardianLives[0], ally.attributes.life);
+          setGuardianLives(updatedGuardianLives);
+        } if (ally.charClass === 'support') {
+          const updatedSupportLives = [...supportLives];
+          updatedSupportLives[0] += calculatedHealing;
+          updatedSupportLives[0] = Math.min(updatedSupportLives[0], ally.attributes.life);
+          setSupportLives(updatedSupportLives);
+        } if (ally.charClass === 'damager') {
+          const updatedDamagerLives = [...damagerLives];
+          updatedDamagerLives[0] += calculatedHealing;
+          updatedDamagerLives[0] = Math.min(updatedDamagerLives[0], ally.attributes.life);
+          setDamagerLives(updatedDamagerLives);
+        }
+
+        const healMessage = `${activeCharacter.name} usou ${skillName} em ${ally.name} e curou ${calculatedHealing} de vida`;
+        setAttackLog((prevAttackLog) => [...prevAttackLog, healMessage]);
+        return;
+      }
+
+      if (chaosMark) {
+        calculatedDamage *= 1.5;
+        setChaosMark((prevMarks) => prevMarks - 1)
+      }
+
+      if (Lightbringer) {
+        calculatedDamage *= 2
+        const updatedEnemyLives = [enemyLives];
+        updatedEnemyLives[0] -= calculatedDamage;
+        setEnemyLives(updatedEnemyLives);
+        setLightbringer(false)
+      } else {
+        const updatedEnemyLives = [enemyLives];
+        updatedEnemyLives[0] -= calculatedDamage;
+        setEnemyLives(updatedEnemyLives);
+      }
+
+      const attackMessage = `${activeCharacter.name} usou ${skillName} em ${targetCharacter.name} e causou ${calculatedDamage} de dano`;
+      setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+    }
+  }, [Lightbringer, chaosMark, selectedSkill, selectedAlly, enemyLives, charsForHeal, guardianLives, supportLives, damagerLives]);
+
+  const anneSkills = useCallback((activeCharacter, targetCharacter) => {
+    if (activeCharacter.name === 'Anne') {
+      let skillName;
+      let calculatedDamage = 0;
+
+      if (selectedSkill === 'Caos Aprimorado') {
+        skillName = 'Caos Aprimorado';
+        calculatedDamage = activeCharacter.attributes.attack + 200 - targetCharacter.attributes.defense;
+        setChaosMark(3);
+      } else if (selectedSkill === 'Distorção') {
+        skillName = 'Distorção';
+        calculatedDamage = activeCharacter.attributes.attack + 300 - targetCharacter.attributes.defense;
+
+        if (distortion) {
+          calculatedDamage += 800
+          setDistortion(false);
+        }
+
+      } else if (selectedSkill === 'Domínio Umbral') {
+        skillName = 'Domínio Umbral';
+        calculatedDamage = activeCharacter.attributes.attack + 200 - targetCharacter.attributes.defense;
+        setWhisperMark(true);
+      } else {
+        skillName = 'Sussurros da Destruição';
+        calculatedDamage = activeCharacter.attributes.attack + 500 - targetCharacter.attributes.defense;
+        setDistortion(true)
+        if (whisperMark) {
+          calculatedDamage += 500;
+          setWhisperMark(false);
+        }
+      }
+
+      if (chaosMark) {
+        calculatedDamage *= 1.5;
+        setChaosMark((prevMarks) => prevMarks - 1);
+      }
+
+      const updatedEnemyLives = [enemyLives];
+      updatedEnemyLives[0] -= calculatedDamage;
+      setEnemyLives(updatedEnemyLives);
+
+      const attackMessage = `${activeCharacter.name} usou ${skillName} em ${targetCharacter.name} e causou ${calculatedDamage} de dano`;
+      setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+    }
+  }, [selectedSkill, chaosMark, distortion, enemyLives, whisperMark]);
+
+  const aresSkills = useCallback((activeCharacter, targetCharacter) => {
+    if (activeCharacter.name === 'Ares') {
+      let skillName
+      let calculatedDamage = 0;
+
+      if (selectedSkill === 'Alma Dracônica') {
+        skillName = 'Alma Dracônica';
+        setDragonScalesBarrier(true);
+        setDragonClaws(true)
+      } else if (selectedSkill === 'Lâmina Voraz') {
+        skillName = 'Lâmina Voraz';
+        calculatedDamage = activeCharacter.attributes.attack + 350 - targetCharacter.attributes.defense;
+
+        const updateLives = [...guardianLives];
+        updateLives[0] += calculatedDamage;
+        setGuardianLives(updateLives)
+      } else if (selectedSkill === 'Ira Draconiana') {
+        skillName = 'Ira Draconiana';
+        calculatedDamage = activeCharacter.attributes.attack + 200 - targetCharacter.attributes.defense;
+        setDragonClaws(true)
+      } else if (selectedSkill === 'Corte do Dragão') {
+        skillName = 'Corte do Dragão';
+        calculatedDamage = activeCharacter.attributes.attack + 600 - targetCharacter.attributes.defense;
+
+        if(dragonClaws) {
+          calculatedDamage += 200
+        }
+      }
+
+      if (dragonClaws) {
+        calculatedDamage *= 1.5;
+        setDragonClaws(false);
+      }
+
+      if (chaosMark && calculatedDamage > 0) {
+        calculatedDamage *= 1.5;
+        setChaosMark((prevMarks) => prevMarks - 1)
+      }
+
+      const updatedEnemyLives = [enemyLives];
+      updatedEnemyLives[0] -= calculatedDamage;
+      setEnemyLives(updatedEnemyLives);
+
+      const attackMessage = `${activeCharacter.name} usou ${skillName} em ${targetCharacter.name} e causou ${calculatedDamage} de dano`;
+      setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+    }
+  }, [selectedSkill, enemyLives, chaosMark, guardianLives, dragonClaws])
 
   const handleAttack = useCallback(() => {
     if (showVictoryMessage || showDefeatMessage) {
@@ -184,15 +403,24 @@ const Battle = () => {
     if (activeCharacter.charClass === 'enemy') {
       handleEnemyAttack();
     } else {
-      const enemy = enemies[0];
-      const damage = activeCharacter.attributes.attack - enemy.attributes.defense;
-      if (damage > 0) {
-        setEnemyLives((prevEnemyLives) => prevEnemyLives - damage);
-
-        const attackMessage = `${activeCharacter.name} causou ${damage} de dano a ${enemy.name}`;
-        setAttackLog((prevAttackLog) => [...prevAttackLog, attackMessage]);
+      if (activeCharacter.name === 'Diana') {
+        const targetCharacter = enemies[0];
+        dianaSkills(activeCharacter, targetCharacter);
+        setSelectedSkill(null)
+      }
+      if (activeCharacter.name === 'Anne') {
+        const targetCharacter = enemies[0];
+        anneSkills(activeCharacter, targetCharacter);
+        setSelectedSkill(null)
+      }
+      if (activeCharacter.name === 'Ares') {
+        const targetCharacter = enemies[0];
+        aresSkills(activeCharacter, targetCharacter);
+        setSelectedSkill(null)
       }
     }
+
+    updateTurnCount();
 
     let list = [...orderList];
     list.shift();
@@ -215,14 +443,16 @@ const Battle = () => {
     originalOrderList,
     enemyLives,
     showDefeatMessage,
-    showVictoryMessage
+    showVictoryMessage,
+    dianaSkills,
+    anneSkills,
+    aresSkills
   ]);
 
   useEffect(() => {
     const updatedActiveCharacterIndex = orderList.findIndex(character => !character.isDead);
     setActiveCharacterIndex(updatedActiveCharacterIndex);
   }, [orderList]);
-
 
   useEffect(() => {
     if (activeCharacter.charClass === 'enemy') {
@@ -299,84 +529,217 @@ const Battle = () => {
         </Link>
       )}
 
+      <div className="turn-count">Rodadas: {turnCount}</div>
+
+
       <div className="battle-camp">
         <div className="battle-container">
           <div className='back-line'>
             <div className="character-list-battle">
               {support.map((character, index) => (
-                <div key={character.id} className="character-card-battle">
+                <div
+                  key={character.id}
+                  className={`character-card-battle ${supportLives[index] > character.attributes.life ? 'shield-border' : ''}`}
+                >
                   <h2 className="character-name-battle">{character.name}</h2>
                   <img className="character-image-battle" src={character.image} alt={character.name} />
                   <div className="character-info-battle">
-                    <p className="character-life-battle">Vida: {supportLives[index]} / {character.attributes.life}</p>
+                    {supportLives[index] > character.attributes.life ? (
+                      <p className="character-life-battle">
+                        Escudo: {supportLives[index]} / {character.attributes.life}
+                      </p>
+                    ) : (
+                      <p className="character-life-battle">
+                        Vida: {supportLives[index]} / {character.attributes.life}
+                      </p>
+                    )}
+                    {Lightbringer && (
+                      <div className='skill'>
+                        <span className='dominio-atq'></span>
+                        <p>Lightbringer</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="character-list-battle">
-              <div className='damager-div'>
-                {damager.map((character, index) => (
-                  <div key={character.id} className="character-card-battle">
-                    <h2 className="character-name-battle">{character.name}</h2>
-                    <img className="character-image-battle" src={character.image} alt={character.name} />
-                    <div className="character-info-battle">
-                      <p className="character-life-battle">Vida: {damagerLives[index]} / {character.attributes.life}</p>
-                    </div>
+              {damager.map((character, index) => (
+                <div
+                  key={character.id}
+                  className={`character-card-battle ${damagerLives[index] > character.attributes.life ? 'shield-border' : ''}`}
+                >
+                  <h2 className="character-name-battle">{character.name}</h2>
+                  <img className="character-image-battle" src={character.image} alt={character.name} />
+                  <div className="character-info-battle">
+                    {damagerLives[index] > character.attributes.life ? (
+                      <p className="character-life-battle">
+                        Escudo: {damagerLives[index]} / {character.attributes.life}
+                      </p>
+                    ) : (
+                      <p className="character-life-battle">
+                        Vida: {damagerLives[index]} / {character.attributes.life}
+                      </p>
+                    )}
                   </div>
-                ))}
-              </div>
+                  {whisperMark && (
+                    <div className='skill'>
+                      <span className='dominio'></span>
+                      <p>Marca do Sussuro</p>
+                    </div>
+                  )}
+                  {distortion && (
+                    <div className='chaos-mark'>
+                      <p>Distortion Mark</p>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="character-list-battle-guardian">
             {guardians.map((character, index) => (
-              <div key={character.id} className="character-card-battle-guardian">
+              <div
+                key={character.id}
+                className={`character-card-battle ${guardianLives[index] > character.attributes.life ? 'shield-border' : ''}`}
+              >
                 <h2 className="character-name-battle-guardian">{character.name}</h2>
                 <img className="character-image-battle-guardian" src={character.image} alt={character.name} />
                 <div className="character-info-battle-guardian">
-                  <p className="character-life-battle">Vida: {guardianLives[index]} / {character.attributes.life}</p>
+                  {guardianLives[index] > character.attributes.life ? (
+                    <p className="character-life-battle">
+                      Escudo: {guardianLives[index]} / {character.attributes.life}
+                    </p>
+                  ) : (
+                    <p className="character-life-battle">
+                      Vida: {guardianLives[index]} / {character.attributes.life}
+                    </p>
+                  )}
                 </div>
+                {dragonScalesBarrier && (
+                  <div className='skill'>
+                    <span className='dominio-def'></span>
+                    <p>Alma Draconiana</p>
+                  </div>
+                )}
+                {dragonClaws && (
+                  <div className='skill'>
+                    <span className='dominio-atq'></span>
+                    <p>Alma Draconiana</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
 
         <div className="enemy-list">
-          {enemies.map((enemy) => (
-            <div key={enemy.id} className="enemy-card">
+          {enemies.map((enemy, index) => (
+            <div
+              key={enemy.id}
+              className={'enemy-card'}
+            >
               <h2 className="enemy-name-battle">{enemy.name}</h2>
               <img className="enemy-image-battle" src={enemy.image} alt={enemy.name} />
               <div className="enemy-info-battle">
-                {enemyLives > enemy.attributes.life ? (
-                  <div className="shielded-enemy">
-                    <p className="enemy-life-battle">Escudo: {enemyLives} / {enemy.attributes.life}</p>
-                  </div>
+                {enemyLives[index] <= enemy.attributes.life ? (
+                  <p className="enemy-life-battle">
+                    Vida: {enemyLives} / {enemy.attributes.life}
+                  </p>
                 ) : (
-                  <p className="enemy-life-battle">Vida: {enemyLives} / {enemy.attributes.life}</p>
+                  <p className="enemy-life-battle">
+                    Escudo: {enemyLives} / {enemy.attributes.life}
+                  </p>
+                )}
+                {chaosMark && (
+                  <div className='chaos-mark'>
+                    <p>Chaos Mark</p>
+                  </div>
                 )}
               </div>
-
             </div>
           ))}
         </div>
       </div>
+
       <div className="active-character-skills">
         <div className="top">
           <h3 className="active-name">Habilidades de {activeCharacter.name}</h3>
           <ul>
             {Object.keys(activeCharacter.skills).map((skillName) => (
               <li className="active-abilities" key={skillName}>
-                <strong>{skillName}:</strong> {activeCharacter.skills[skillName]}
+                <label>
+                  <input
+                    type="radio"
+                    name="selectedSkill"
+                    value={skillName}
+                    checked={selectedSkill === skillName}
+                    onChange={(e) => setSelectedSkill(e.target.value)}
+                  />
+                  {skillName}: {activeCharacter.skills[skillName]}
+                </label>
               </li>
             ))}
           </ul>
         </div>
+
+        {selectedSkill === 'Aura Restauradora' && (
+          <div className="ally-list">
+            <h4>Selecione um aliado para curar:</h4>
+            <ul>
+              {guardians.map((ally) => (
+                <li key={ally.id}>
+                  <label>
+                    <input
+                      type="radio"
+                      name="selectedAlly"
+                      value={ally.id}
+                      checked={selectedAlly === ally.id}
+                      onChange={() => setSelectedAlly(ally.id)}
+                    />
+                    {ally.name}
+                  </label>
+                </li>
+              ))}
+              {support.map((ally) => (
+                <li key={ally.id}>
+                  <label>
+                    <input
+                      type="radio"
+                      name="selectedAlly"
+                      value={ally.id}
+                      checked={selectedAlly === ally.id}
+                      onChange={() => setSelectedAlly(ally.id)}
+                    />
+                    {ally.name}
+                  </label>
+                </li>
+              ))}
+              {damager.map((ally) => (
+                <li key={ally.id}>
+                  <label>
+                    <input
+                      type="radio"
+                      name="selectedAlly"
+                      value={ally.id}
+                      checked={selectedAlly === ally.id}
+                      onChange={() => setSelectedAlly(ally.id)}
+                    />
+                    {ally.name}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
-      <button className="attack-btn" onClick={handleAttack}>
+      <button className="attack-btn" onClick={handleAttack} disabled={!selectedSkill}>
         Atacar
       </button>
+
     </>
   );
 };

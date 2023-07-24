@@ -18,19 +18,23 @@ function Select() {
       .slice()
       .reverse()
       .findIndex((char) => !char);
-  
+
     if (emptySquareIndex !== -1) {
       const updatedCharacters = [...selectedCharacters];
       const actualIndex = selectedCharacters.length - 1 - emptySquareIndex;
-  
+
       const isCharacterSelected = updatedCharacters
         .slice(0, actualIndex + 1)
         .some((char) => char && char.id === character.id);
-  
+
       if (!isCharacterSelected) {
-        updatedCharacters[actualIndex] = character;
-        setSelectedCharacters(updatedCharacters);
-        setSelectedCharacter(character);
+  
+        const isAlreadySelected = updatedCharacters.some((char) => char && char.id === character.id);
+        if (!isAlreadySelected) {
+          updatedCharacters[actualIndex] = character;
+          setSelectedCharacters(updatedCharacters);
+          setSelectedCharacter(character);
+        }
       }
     }
   }
@@ -43,6 +47,20 @@ function Select() {
     });
     localStorage.setItem('selectedCharacters', JSON.stringify(selectedCharacters));
   }
+
+  function checkSelectedClasses() {
+    const selectedGuardians = selectedCharacters.filter((character) => character?.charClass === 'guardian');
+    const selectedDamagers = selectedCharacters.filter((character) => character?.charClass === 'damager');
+    const selectedSupporters = selectedCharacters.filter((character) => character?.charClass === 'support');
+
+    return (
+      selectedGuardians.length === 1 &&
+      selectedDamagers.length === 1 &&
+      selectedSupporters.length === 1
+    );
+  }
+
+  const isBattleButtonDisabled = !checkSelectedClasses();
 
   function isSelected(character) {
     return selectedCharacters.includes(character);
@@ -77,7 +95,12 @@ function Select() {
         </Link>
 
         <Link to={{ pathname: '/battle' }}>
-          <button className="btn-functions">Battle</button>
+          <button
+            className={`btn-functions ${isBattleButtonDisabled ? 'btn-functions-disabled' : ''}`}
+            disabled={isBattleButtonDisabled}
+          >
+            Battle
+          </button>
         </Link>
       </div>
 
